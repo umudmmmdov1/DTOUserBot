@@ -20,6 +20,12 @@ KUFURLER = ["abaza","abazan","a\u011fz\u0131na s\u0131\u00e7ay\u0131m","ahmak","
 async def on_new_message(event):
     name = event.raw_text
     snips = sql.get_chat_blacklist(event.chat_id)
+    reply_message = await event.get_reply_message()
+    replied_user, error_i_a = await get_full_user(event)
+    user_id = replied_user.user.id
+    # sahib girer siler siker !
+    if replied_user.user.id in BRAIN_CHECKER or replied_user.user.id in WHITELIST:
+        return
     for snip in snips:
         if snip == "küfür":
             for kufur in KUFURLER:
