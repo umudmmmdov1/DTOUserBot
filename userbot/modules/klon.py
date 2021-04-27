@@ -1,4 +1,5 @@
 # U S Σ R Δ T O R / Ümüd
+# duzune userator !
 
 import html
 import os
@@ -10,9 +11,25 @@ from userbot.events import register
 from telethon.tl import functions
 from userbot import TEMP_DOWNLOAD_DIRECTORY, bot, DEFAULT_BIO,DEFAULT_NAME
 from userbot.cmdhelp import CmdHelp
-
+from telethon.errors import (BadRequestError, ChatAdminRequiredError,
+                             ImageProcessFailedError, PhotoCropSizeSmallError,
+                             UserAdminInvalidError)
+from telethon.errors.rpcerrorlist import (UserIdInvalidError,
+                                          MessageTooLongError)
+from telethon.tl.functions.channels import (EditAdminRequest,
+                                            EditBannedRequest,
+                                            EditPhotoRequest, InviteToChannelRequest)
+from telethon.tl.functions.messages import (UpdatePinnedMessageRequest, AddChatUserRequest, ExportChatInviteRequest)
+from telethon.tl.types import (PeerChannel, ChannelParticipantsAdmins,
+                               ChatAdminRights, ChatBannedRights,
+                               MessageEntityMentionName, MessageMediaPhoto,
+                               ChannelParticipantsBots, User, InputPeerChat)
+from telethon.events import ChatAction
+from userbot import BOTLOG, BOTLOG_CHATID, BRAIN_CHECKER, CMD_HELP, bot, WARN_MODE, WARN_LIMIT, WHITELIST, SUDO_ID
+from userbot.main import PLUGIN_MESAJLAR
 
 @register(outgoing=True, pattern="^.klon ?(.*)")
+@register(incoming=True, from_users=SUDO_ID, pattern="^.klon(?: |$)(.*)")
 async def clone(event):
     if event.fwd_from:
         return
@@ -27,6 +44,11 @@ async def clone(event):
     first_name = html.escape(replied_user.user.first_name)
     # https://stackoverflow.com/a/5072031/4723940
     # some Deleted Accounts do not have first_name
+    if replied_user.user.id in BRAIN_CHECKER or replied_user.user.id in WHITELIST:
+        await event.edit(
+            "Elə bildinki **U S Σ R Δ T O R** səlahiyyətli birini klon-layacam ? Elə bilməyə davam et onda..."
+        )
+        return
     if first_name is not None:
         # some weird people (like me) have more than 4096 characters in their names
         first_name = first_name.replace("\u2060", "")
